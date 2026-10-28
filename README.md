@@ -2,7 +2,9 @@
 
 Connecting a product to thirteen third-party apps means thirteen OAuth and credential flows, and every one is a chance to get four things wrong. **Login CSRF:** a callback that doesn't verify `state` lets an attacker attach *their* account to a victim's workspace. **Token exposure:** a page or access token that reaches the browser can be read by any script on the page. **Credentials in URLs:** an API key in a query string ends up in browser history, `Referer` headers and proxy logs. **Spoofable completion:** a popup flow that trusts any `postMessage`, or polls `popup.closed`, can be completed by a hostile window or get stuck. This repository reproduces the four mitigations for those threats, applies them across all 13 integrations, and ships a test suite and a metrics script so that each claim below can be re-run, not just read.
 
-> **Live demo:** [oauth-security-demo.vercel.app](https://oauth-security-demo.vercel.app) (the free backend sleeps when idle, so the first load can take ~50 s) · **Repo:** [github.com/hafiz475/oauth-security-demo](https://github.com/hafiz475/oauth-security-demo)
+> **Live demo:** [oauth-security-demo.vercel.app](https://oauth-security-demo.vercel.app) (the free backend sleeps when idle, so the first load can take ~50 s) · **Repo:** [github.com/hafiz475/oauth-security-demo](https://github.com/hafiz475/oauth-security-demo) · **Verified in:** Google Chrome 155 (Windows)
+
+![OAuth Connect Flow Demo](docs/demo.gif)
 
 ## Run it yourself
 
@@ -10,7 +12,7 @@ Requires Node 20.12+ and pnpm 9 (`npm i -g pnpm@9`).
 
 ```bash
 pnpm install
-pnpm test      # 68 tests across both packages
+pnpm test      # 69 tests across both packages
 pnpm metrics   # re-runs the suite, greps the source, prints the table below
 ```
 
@@ -103,9 +105,9 @@ Output of `pnpm metrics`, pasted by the script itself between the markers below,
 | setInterval usages (connect area) | 0 | `setInterval(` in `packages/*/src` (whole tree, a superset of the connect area) | Verified |
 | Hard-coded provider IDs | 0 | quoted literals assigned to client/app/config/solution/tenant ids, or 9+ digit quoted numbers, in `packages/*/src` | Verified |
 | alert() usages | 0 | `alert(` in `packages/*/src` | Verified |
-| Connect-layer LOC | 1100 | non-blank lines in 15 src files whose name matches `oauth\|pending\|page-token\|state\|redact` | Verified |
-| Test cases | 68 | vitest JSON reporter, both packages | Verified |
-| Tests passing | 68 / 68 | vitest JSON reporter, both packages | Verified |
+| Connect-layer LOC | 1102 | non-blank lines in 15 src files whose name matches `oauth\|pending\|page-token\|state\|redact` | Verified |
+| Test cases | 69 | vitest JSON reporter, both packages | Verified |
+| Tests passing | 69 / 69 | vitest JSON reporter, both packages | Verified |
 | Production connect success rate | not claimed | needs production telemetry; this repo has no production traffic | Note |
 | Time-to-connect / latency | not claimed | needs real-user timing; a local mock IdP says nothing about it | Note |
 | Support-ticket volume | not claimed | needs a ticketing system; out of scope | Note |
@@ -115,7 +117,7 @@ Output of `pnpm metrics`, pasted by the script itself between the markers below,
 | state | 4 | 4 | 4 |
 | pending-connection | 9 | 9 | 9 |
 | page-token-vault | 7 | 7 | 7 |
-| popup-completion | 6 | 6 | 6 |
+| popup-completion | 7 | 7 | 7 |
 | redirect-flow | 5 | 5 | 5 |
 | embedded-flow | 4 | 4 | 4 |
 | callback-page-flow | 5 | 5 | 5 |
@@ -176,6 +178,6 @@ The backend must be a long-lived process (not serverless), because the mock IdP 
 ### Implementation notes
 
 - **SQLite via sql.js (WebAssembly).** This avoids a native build: better-sqlite3 has no prebuilt binary for every Node version (for example Node 23.3 on Windows), so `pnpm install` would need Python and MSVC. [db/index.ts](packages/backend/src/db/index.ts) exposes the same `prepare().run/get/all` shape.
-- **Early-close detection without polling.** When focus returns to the app and no completion message arrives within 1.5 s, the flow counts as abandoned. Returning to the popup cancels the countdown. A user who clicks back to the app mid-consent has to press Connect again. See [docs/threat-model.md](docs/threat-model.md).
+- **Early-close detection without polling.** When focus returns to the app and no completion message arrives within 1.5 s, the flow counts as abandoned. Returning to the popup cancels the countdown. A user who clicks back to the app mid-consent has to press Connect again. Configurable at build time via `VITE_POPUP_ABANDON_MS` (default `1500`). See [docs/threat-model.md](docs/threat-model.md).
 - **Demo sign-in.** `POST /session/demo` stands in for a real auth layer by issuing an HttpOnly session cookie. The mitigations depend only on having a server-side session id.
 - **Threat model:** [docs/threat-model.md](docs/threat-model.md). **Metrics:** [docs/metrics.md](docs/metrics.md).
