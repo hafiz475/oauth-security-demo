@@ -2,7 +2,7 @@
 
 Connecting a product to thirteen third-party apps means thirteen OAuth and credential flows, and every one is a chance to get four things wrong. **Login CSRF:** a callback that doesn't verify `state` lets an attacker attach *their* account to a victim's workspace. **Token exposure:** a page or access token that reaches the browser can be read by any script on the page. **Credentials in URLs:** an API key in a query string ends up in browser history, `Referer` headers and proxy logs. **Spoofable completion:** a popup flow that trusts any `postMessage`, or polls `popup.closed`, can be completed by a hostile window or get stuck. This repository reproduces the four mitigations for those threats, applies them across all 13 integrations, and ships a test suite and a metrics script so that each claim below can be re-run, not just read.
 
-> **Live demo:** [live demo](placeholder) · **Repo:** [github.com/hafiz475/oauth-security-demo](https://github.com/hafiz475/oauth-security-demo)
+> **Live demo:** [oauth-security-demo.vercel.app](https://oauth-security-demo.vercel.app) (the free backend sleeps when idle, so the first load can take ~50 s) · **Repo:** [github.com/hafiz475/oauth-security-demo](https://github.com/hafiz475/oauth-security-demo)
 
 ## Run it yourself
 
