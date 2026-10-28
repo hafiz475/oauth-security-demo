@@ -19,6 +19,7 @@ describe('popup-completion', () => {
     cleanup();
     frame.remove();
     vi.restoreAllMocks();
+    vi.unstubAllEnvs();
     vi.useRealTimers();
   });
 
@@ -103,16 +104,29 @@ describe('popup-completion', () => {
     await expect(result).resolves.toEqual({ status: 'success', payloadId: 'p-new' });
   });
 
-  it('configurable abandon timeout: honours custom closeGraceMs', async () => {
-    vi.useFakeTimers();
-    const result = hook({ closeGraceMs: 3_000 }).open('/oauth/popup/zoom?payloadId=p-custom');
+  it('configurable abandon timeout: VITE_POPUP_ABANDON_MS sets the default grace period; invalid values fall back to 1500 ms', async () => {
+    // The default is read when the module loads, so reload it under each env value.
+    const loadWith = async (value: string) => {
+      vi.stubEnv('VITE_POPUP_ABANDON_MS', value);
+      vi.resetModules();
+      return import('../src/hooks/useOAuthPopup');
+    };
+    for (const invalid of ['', 'soon', '0', '-250']) {
+      expect((await loadWith(invalid)).DEFAULT_CLOSE_GRACE_MS, invalid).toBe(1_500);
+    }
+    const configured = await loadWith('4000');
+    expect(configured.DEFAULT_CLOSE_GRACE_MS).toBe(4_000);
 
+    // With no closeGraceMs option, the hook waits the configured 4 s, not 1.5 s.
+    vi.useFakeTimers();
+    const { open } = renderHook(() => configured.useOAuthPopup({ allowedOrigins: [API_ORIGIN] })).result.current;
+    const result = open('/oauth/popup/zoom?payloadId=p-env');
     window.dispatchEvent(new Event('focus'));
-    vi.advanceTimersByTime(2_000);
+    vi.advanceTimersByTime(3_999);
     expect(await isPending(result)).toBe(true);
 
     const assertion = expect(result).rejects.toMatchObject({ reason: 'closed' });
-    vi.advanceTimersByTime(1_000);
+    vi.advanceTimersByTime(1);
     await assertion;
   });
 });
