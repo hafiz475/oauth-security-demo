@@ -23,7 +23,7 @@ const EXPECTED_GROUPS: Record<string, number> = {
   state: 4,
   'pending-connection': 9,
   'page-token-vault': 7,
-  'popup-completion': 6,
+  'popup-completion': 7,
   'redirect-flow': 5,
   'embedded-flow': 4,
   'callback-page-flow': 5,

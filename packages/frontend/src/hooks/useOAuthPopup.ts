@@ -39,6 +39,9 @@ export interface LaunchTarget {
 const isCompletion = (d: unknown): d is { status: string; payloadId: string; error?: string } =>
   !!d && typeof d === 'object' && typeof (d as { status?: unknown }).status === 'string' && typeof (d as { payloadId?: unknown }).payloadId === 'string';
 
+const envMs = Number(import.meta.env?.VITE_POPUP_ABANDON_MS);
+export const DEFAULT_CLOSE_GRACE_MS = Number.isFinite(envMs) && envMs > 0 ? envMs : 1_500;
+
 export function useOAuthPopup(options: UseOAuthPopupOptions) {
   const optionsRef = useRef(options);
   optionsRef.current = options;
@@ -57,7 +60,7 @@ export function useOAuthPopup(options: UseOAuthPopupOptions) {
    * the backend has issued the launch URL.
    */
   const open = useCallback((target: string | LaunchTarget | Promise<LaunchTarget>): Promise<PopupResult> => {
-    const { allowedOrigins, timeoutMs = 30_000, closeGraceMs = 1_500, onRejectedOrigin } = optionsRef.current;
+    const { allowedOrigins, timeoutMs = 30_000, closeGraceMs = DEFAULT_CLOSE_GRACE_MS, onRejectedOrigin } = optionsRef.current;
     const immediate = typeof target === 'string' ? { url: target } : target instanceof Promise ? null : target;
     const popup = window.open(immediate?.url ?? 'about:blank', 'oauth', 'popup,width=800,height=600');
 

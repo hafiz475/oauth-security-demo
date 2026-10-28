@@ -102,4 +102,17 @@ describe('popup-completion', () => {
     send({ status: 'success', payloadId: 'p-new' });
     await expect(result).resolves.toEqual({ status: 'success', payloadId: 'p-new' });
   });
+
+  it('configurable abandon timeout: honours custom closeGraceMs', async () => {
+    vi.useFakeTimers();
+    const result = hook({ closeGraceMs: 3_000 }).open('/oauth/popup/zoom?payloadId=p-custom');
+
+    window.dispatchEvent(new Event('focus'));
+    vi.advanceTimersByTime(2_000);
+    expect(await isPending(result)).toBe(true);
+
+    const assertion = expect(result).rejects.toMatchObject({ reason: 'closed' });
+    vi.advanceTimersByTime(1_000);
+    await assertion;
+  });
 });
