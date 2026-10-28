@@ -1,0 +1,24 @@
+{
+  "name": "oauth-security-demo",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.15.9",
+  "engines": {
+    "node": ">=20.12"
+  },
+  "scripts": {
+    "dev": "node scripts/ensure-env.mjs && pnpm -r --parallel dev",
+    "test": "vitest run",
+    "metrics": "tsx scripts/metrics.ts",
+    "typecheck": "pnpm -r typecheck",
+    "build": "pnpm --filter @demo/frontend build"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.30",
+    "jsdom": "^26.1.0",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5",
+    "vitest": "^3.2.4"
+  }
+}

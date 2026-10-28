@@ -1,0 +1,82 @@
+:root {
+  --bg: #f7f7f5;
+  --surface: #ffffff;
+  --text: #1c1c1a;
+  --muted: #6b6b66;
+  --border: #e2e1dc;
+  --accent: #2357d9;
+  --ok: #17803d;
+  --danger: #b42318;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #141413;
+    --surface: #1e1e1c;
+    --text: #ecebe6;
+    --muted: #9c9b95;
+    --border: #33332f;
+    --accent: #7b9cff;
+    --ok: #4cc27a;
+    --danger: #ff7a6e;
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.5 system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+main { max-width: 64rem; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+a { color: var(--accent); }
+code { font-size: 0.85em; padding: 0 0.25em; }
+h2 { font-size: 1rem; margin: 2rem 0 0.75rem; }
+h3 { font-size: 0.95rem; margin: 1.25rem 0 0.5rem; }
+
+.top { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; }
+.brand { font-weight: 650; text-decoration: none; color: var(--text); font-size: 1.1rem; }
+.lede { color: var(--muted); max-width: 46rem; }
+.muted { color: var(--muted); }
+.error { color: var(--danger); }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr)); gap: 0.75rem; }
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.card.wide { max-width: 40rem; }
+.card header { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
+.badge { font-size: 0.75rem; padding: 0.05rem 0.5rem; border-radius: 999px; border: 1px solid currentColor; }
+.badge.ok { color: var(--ok); }
+.action { display: flex; flex-direction: column; gap: 0.25rem; margin-top: auto; }
+
+button {
+  font: inherit;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  cursor: pointer;
+}
+button:hover:not(:disabled) { border-color: var(--accent); }
+button:disabled { opacity: 0.6; cursor: default; }
+button.selected { border-color: var(--accent); color: var(--accent); }
+input {
+  font: inherit;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+}
+.list { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.4rem; }
+pre { white-space: pre-wrap; }
