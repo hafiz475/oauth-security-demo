@@ -1,0 +1,23 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "vite",
+  "rewrites": [
+    { "source": "/session", "destination": "https://oauth-security-demo.onrender.com/session" },
+    { "source": "/session/:path*", "destination": "https://oauth-security-demo.onrender.com/session/:path*" },
+    { "source": "/providers", "destination": "https://oauth-security-demo.onrender.com/providers" },
+    { "source": "/connections", "destination": "https://oauth-security-demo.onrender.com/connections" },
+    { "source": "/health", "destination": "https://oauth-security-demo.onrender.com/health" },
+    { "source": "/oauth/popup/:path*", "destination": "https://oauth-security-demo.onrender.com/oauth/popup/:path*" },
+    { "source": "/oauth/redirect/:path*", "destination": "https://oauth-security-demo.onrender.com/oauth/redirect/:path*" },
+    { "source": "/oauth/embedded/:path*", "destination": "https://oauth-security-demo.onrender.com/oauth/embedded/:path*" },
+    {
+      "source": "/oauth/callback/:provider/:action(start|verify-state|exchange)",
+      "destination": "https://oauth-security-demo.onrender.com/oauth/callback/:provider/:action"
+    },
+    { "source": "/google-oauth2/:path*", "destination": "https://oauth-security-demo.onrender.com/google-oauth2/:path*" },
+    { "source": "/integration/:path*", "destination": "https://oauth-security-demo.onrender.com/integration/:path*" },
+    { "source": "/meta/:path*", "destination": "https://oauth-security-demo.onrender.com/meta/:path*" },
+    { "source": "/mock-oauth/:path*", "destination": "https://oauth-security-demo.onrender.com/mock-oauth/:path*" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}

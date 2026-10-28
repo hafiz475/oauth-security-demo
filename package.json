@@ -8,6 +8,7 @@
   },
   "scripts": {
     "dev": "node scripts/ensure-env.mjs && pnpm -r --parallel dev",
+    "start": "pnpm --filter @demo/backend start:prod",
     "test": "vitest run",
     "metrics": "tsx scripts/metrics.ts",
     "typecheck": "pnpm -r typecheck",

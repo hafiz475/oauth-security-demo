@@ -14,7 +14,7 @@ pnpm test      # 68 tests across both packages
 pnpm metrics   # re-runs the suite, greps the source, prints the table below
 ```
 
-To click through it: `pnpm dev`, then open <http://localhost:5173>. The first run writes `.env` with a freshly generated `DEMO_AES_KEY`. Every provider points at a local mock identity provider, so no real credentials are needed.
+To deploy your own copy, see [Deploying](#deploying). To click through it: `pnpm dev`, then open <http://localhost:5173>. The first run writes `.env` with a freshly generated `DEMO_AES_KEY`. Every provider points at a local mock identity provider, so no real credentials are needed.
 
 ## Architecture
 
@@ -156,6 +156,20 @@ Every row is one case in [all-providers.test.ts](packages/backend/tests/all-prov
 ## How I built this
 
 This is a clean-room reimplementation: no employer code, comments, constants, schemas or tests were copied or imported. Every file was written from scratch from the design described above. The same design runs in a private production codebase at 13-integration scale; this repository exists so the approach can be inspected and verified in public.
+
+## Deploying
+
+The backend runs on Render and the SPA on Vercel. [packages/frontend/vercel.json](packages/frontend/vercel.json) proxies the API paths to Render, the same way Vite does in dev. The browser only ever sees one origin, so the session cookie stays first-party and `APP_ORIGIN` equals `API_PUBLIC_ORIGIN`.
+
+| | Render (web service) | Vercel (project) |
+| --- | --- | --- |
+| Root directory | *(repo root)* | `packages/frontend` |
+| Build | `pnpm install --frozen-lockfile` | Vite preset (`vite build`, output `dist`) |
+| Start | `pnpm start` | n/a |
+| Health check | `/health` | n/a |
+| Env | `DEMO_AES_KEY` (64 hex chars), `HOST=0.0.0.0`, `NODE_VERSION=22`, `APP_ORIGIN` and `API_PUBLIC_ORIGIN` = the Vercel URL | none |
+
+The backend must be a long-lived process (not serverless), because the mock IdP keeps its single-use codes in memory. On Render's free plan the SQLite file is wiped on every restart, which is fine for a demo.
 
 ---
 
